@@ -17,12 +17,14 @@ reset:
 
 
 main:
-setup_palettes:              ; This code sets up the PPU's base memory to the background palette
-	LDA $2002
-	LDA	#$3F
-	STA	$2006
+
+; This code sets up the PPU's base memory to the background palette
+setup_palettes:
+	LDA $2002                  ; This read actually resets write pair for $2005 and $2006 registers.
+	LDA #$3F
+	STA $2006
 	LDA #$00
-	STA	$2006
+	STA $2006
 
 	LDX #$00                   ; Load all palette data
 init_palette_loop:
@@ -32,6 +34,7 @@ init_palette_loop:
 	CPX #$20                   ; Check if X == 32
 	BNE init_palette_loop
 
+; Palette setup complete, setup sprite data.
 	LDA #$80                   ; To be used for mid screen (x/y)
 	STA $0200                  ; Y position	
 	STA $0203                  ; X position
