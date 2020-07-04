@@ -51,5 +51,5 @@ loop_red:
 	.org $FFFA
 interrupt_vector:
 	.dw nmi
-	.dw	reset
+	.dw reset
 	.dw 0
