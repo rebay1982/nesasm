@@ -42,15 +42,44 @@ setup_sprite_data_loop:
 	INX
 	CPX #$10
 	BNE setup_sprite_data_loop
+
+setup_bg_nametable:
+	LDA $2002                  ; Latch and reset hi/lo pairs for $2006 register.
+	LDA #$20
+	STA $2006
+	LDA #$00
+	STA $2006                  ; Write to $2000, where the BG nametable starts.
+
+	LDX #$00
+setup_bg_nametable_loop:
+	LDA bg_nametable_data, x
+	STA $2007
+	INX
+	CPX #$80                   ; 128 bytes.
+	BNE setup_bg_nametable_loop
+
+setup_bg_attr:
+	LDA $2002
+	LDA #$23
+	STA $2006
+	LDA #$C0
+	STA $2006
 	
-	LDA #$80                   ; Genrale NMI Interrupts on vblank
+	LDX #$00
+setup_bg_attr_loop:
+	LDA bg_attr_data, x
+	STA $2007
+	INX
+	CPX #$08
+	BNE setup_bg_attr_loop
+	
+	LDA #%10010000             ; Genrale NMI Interrupts on vblank, sprite pat tab 0, bg pat tab 1
 	STA $2000
 
-	LDA #$10                   ; No intensity (black BG), enable sprites
+	LDA #%00011110             ; enable sprites, enable bg, left clip off.
 	STA $2001
 
 forever:
-
 	JMP forever
 
 
@@ -59,21 +88,66 @@ forever:
 ;=============================
 	.bank 1
 	.org $E000
+
 palette_data:
-	.db $0F, $31, $32, $33     ;background palette data
-	.db $0F, $35, $36, $37
-	.db $0F, $39, $3A, $3B
-	.db $0F, $3D, $3E, $0F
-	.db $0F, $1C, $15, $14     ;sprite palette data 
-	.db $0F, $02, $38, $3C
-	.db $0F, $1C, $15, $14
-	.db $0F, $02, $38, $3C 
+	.db $22, $29, $1A, $0F     ;background palette data
+	.db $22, $36, $17, $0F
+	.db $22, $30, $21, $0F
+	.db $22, $27, $17, $0F
+	.db $22, $1C, $15, $14     ;sprite palette data 
+	.db $22, $02, $38, $3C
+	.db $22, $1C, $15, $14
+	.db $22, $02, $38, $3C 
 
 sprite_attr_data:
 	.db $80, $32, $00, $80     ; Sprite 1
 	.db $80, $33, $00, $88     ; Sprite 2
 	.db $88, $34, $00, $80     ; Sprite 3
 	.db $88, $35, $00, $88     ; Sprite 4
+
+bg_nametable_data:
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24     ; row 1
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24     ; row 2
+	.db $24, $24, $24, $24
+	.db $45, $45, $24, $24
+	.db $45, $45, $45, $45
+	.db $45, $45, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $53, $54, $24, $24     ; row 3
+	.db $24, $24, $24, $24
+	.db $47, $47, $24, $24
+	.db $47, $47, $47, $47
+	.db $47, $47, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $55, $56, $24, $24     ; row 4
+
+bg_attr_data:
+	.db %00000000
+	.db %00010000
+	.db %01010000
+  .db %00010000
+	.db %00000000
+	.db %00000000
+	.db %00000000
+  .db %00110000
 
 	.org $FFFA
 interrupt_vector:
