@@ -1,3 +1,6 @@
+	.include "input.asm"
+
+NMI:
 	; NOTE - We're destroying registers
 	;  Might want to push them on the
 	;  stack and restore when done.
@@ -6,7 +9,7 @@
 	LDA #$02
 	STA $4014                  ; Init DMA transfer of $0200 to PPU Internal OAM memory
 
-	.include "input.asm"       ; Check input.
+	JSR INPUT_READ_CTRL_1
 
 	LDA #%10010000             ; Genrale NMI Interrupts on vblank, sprite pat tab 0, bg pat tab 1
 	STA $2000

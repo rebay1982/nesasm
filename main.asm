@@ -4,17 +4,26 @@
 	.inesmir 1                 ; background mirroring (ignore for now)
 
 
+	.rsset $0000               ; Start data at memory address 0.
+score_1 .rs 1
+score_2 .rs 1
+buttons_1 .rs 1            ; Buttons for controller 1.
+buttons_2 .rs 2            ; Buttons for controller 2.
+
+; CONSTS
+RIGHT_WALL  = $02          ; This is a constant	
+LEFT_WALL   = $20
+TOP_WALL    = $D8
+BOTTOM_WALL = $F6 
+
+
 ;=============================
 ; PRG BANK 0
 ;=============================
 	.bank 0
 	.org $C000
-nmi:
 	.include "nmi.asm"
-
-reset:
 	.include "reset.asm"
-
 
 main:
 
@@ -151,8 +160,8 @@ bg_attr_data:
 
 	.org $FFFA
 interrupt_vector:
-	.dw nmi
-	.dw reset
+	.dw NMI 
+	.dw RESET 
 	.dw 0
 
 
