@@ -7,14 +7,8 @@
 	.rsset $0000               ; Start data at memory address 0.
 score_1 .rs 1
 score_2 .rs 1
-buttons_1 .rs 1            ; Buttons for controller 1.
-buttons_2 .rs 2            ; Buttons for controller 2.
-
-; CONSTS
-RIGHT_WALL  = $02          ; This is a constant	
-LEFT_WALL   = $20
-TOP_WALL    = $D8
-BOTTOM_WALL = $F6 
+buttons_1 .rs 1              ; Buttons for controller 1.
+buttons_2 .rs 2              ; Buttons for controller 2.
 
 
 ;=============================
@@ -52,6 +46,28 @@ setup_sprite_data_loop:
 	CPX #$10
 	BNE setup_sprite_data_loop
 
+;clr_bg_nt:
+;	LDA $2002                  ; Reset hi/lo pair for $2006 register.
+;	LDA #$20
+;	STA $2006
+;	LDA #$00
+;	STA $2006
+;
+;	LDY	#$00
+;clr_bg_nt_loop_y:
+;	LDX #$00
+;clr_bg_nt_loop_x:
+;	LDA #$24
+;	STA $2007
+;	INX
+;	CPX #$FF
+;	BNE clr_bg_nt_loop_x
+;
+;	INY
+;	CPY #$04
+;	BNE clr_bg_nt_loop_y
+
+; Write title screen.	
 setup_bg_nametable:
 	LDA $2002                  ; Latch and reset hi/lo pairs for $2006 register.
 	LDA #$20
@@ -64,7 +80,7 @@ setup_bg_nametable_loop:
 	LDA bg_nametable_data, x
 	STA $2007
 	INX
-	CPX #$80                   ; 128 bytes.
+	CPX #$20                   ; 128 bytes.
 	BNE setup_bg_nametable_loop
 
 setup_bg_attr:
@@ -115,38 +131,22 @@ sprite_attr_data:
 	.db $88, $35, $00, $88     ; Sprite 4
 
 bg_nametable_data:
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24     ; row 1
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24     ; row 2
-	.db $24, $24, $24, $24
-	.db $45, $45, $24, $24
-	.db $45, $45, $45, $45
-	.db $45, $45, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $53, $54, $24, $24     ; row 3
-	.db $24, $24, $24, $24
-	.db $47, $47, $24, $24
-	.db $47, $47, $47, $47
-	.db $47, $47, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24
-	.db $55, $56, $24, $24     ; row 4
+	.db $20, $0E, $15, $0C
+	.db $18, $16, $0E, $24
+	.db $20, $0E, $15, $0C
+	.db $18, $16, $0E, $24
+	.db $20, $0E, $15, $0C
+	.db $18, $16, $0E, $24
+	.db $20, $0E, $15, $0C
+	.db $18, $16, $0E, $24     ; Row 1
+	.db $20, $0E, $15, $0C
+	.db $18, $16, $0E, $24
+	.db $20, $0E, $15, $0C
+	.db $18, $16, $0E, $24
+	.db $20, $0E, $15, $0C
+	.db $18, $16, $0E, $24
+	.db $20, $0E, $15, $0C
+	.db $18, $16, $0E, $24     ; Row 2 
 
 bg_attr_data:
 	.db %00000000
