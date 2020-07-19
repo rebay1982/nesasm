@@ -46,33 +46,34 @@ setup_sprite_data_loop:
 	CPX #$10
 	BNE setup_sprite_data_loop
 
-;clr_bg_nt:
-;	LDA $2002                  ; Reset hi/lo pair for $2006 register.
-;	LDA #$20
-;	STA $2006
-;	LDA #$00
-;	STA $2006
-;
-;	LDY	#$00
-;clr_bg_nt_loop_y:
-;	LDX #$00
-;clr_bg_nt_loop_x:
-;	LDA #$24
-;	STA $2007
-;	INX
-;	CPX #$FF
-;	BNE clr_bg_nt_loop_x
-;
-;	INY
-;	CPY #$04
-;	BNE clr_bg_nt_loop_y
+; Clear title screen
+clr_bg_nt:
+	LDA $2002                  ; Reset hi/lo pair for $2006 register.
+	LDA #$20
+	STA $2006
+	LDA #$00
+	STA $2006
+
+	LDY	#$00
+clr_bg_nt_loop_y:
+	LDX #$00
+clr_bg_nt_loop_x:
+	LDA #$24
+	STA $2007
+	INX
+	CPX #$FF
+	BNE clr_bg_nt_loop_x
+
+	INY
+	CPY #$04
+	BNE clr_bg_nt_loop_y
 
 ; Write title screen.	
 setup_bg_nametable:
 	LDA $2002                  ; Latch and reset hi/lo pairs for $2006 register.
 	LDA #$20
 	STA $2006
-	LDA #$00
+	LDA #$20                   ; We start at the second row because NTSC NES Crops the first 8pixels (first row)	
 	STA $2006                  ; Write to $2000, where the BG nametable starts.
 
 	LDX #$00
@@ -80,7 +81,7 @@ setup_bg_nametable_loop:
 	LDA bg_nametable_data, x
 	STA $2007
 	INX
-	CPX #$20                   ; 128 bytes.
+	CPX #$40                   ; 128 bytes.
 	BNE setup_bg_nametable_loop
 
 setup_bg_attr:
@@ -150,20 +151,19 @@ bg_nametable_data:
 
 bg_attr_data:
 	.db %00000000
-	.db %00010000
-	.db %01010000
-  .db %00010000
+	.db %00000000
+	.db %00000000
+  .db %00000000
 	.db %00000000
 	.db %00000000
 	.db %00000000
-  .db %00110000
+  .db %00000000
 
 	.org $FFFA
 interrupt_vector:
 	.dw NMI 
 	.dw RESET 
 	.dw 0
-
 
 ;=============================
 ; CHR / DATA  BANK
