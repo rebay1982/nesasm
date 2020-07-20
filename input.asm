@@ -11,4 +11,5 @@ read_ctrl_1_loop:
 	ROL buttons_1              ; Carry -> BIT 0 of buttons_1	
 	DEX
 	BNE read_ctrl_1_loop
-	RTS
+
+	RTS                        ; Return to calling routine

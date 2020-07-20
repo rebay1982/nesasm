@@ -9,7 +9,7 @@ score_1 .rs 1
 score_2 .rs 1
 buttons_1 .rs 1              ; Buttons for controller 1.
 buttons_2 .rs 2              ; Buttons for controller 2.
-
+state .rs 1                  ; Contains the game state.
 
 ;=============================
 ; PRG BANK 0
@@ -71,9 +71,9 @@ clr_bg_nt_loop_x:
 ; Write title screen.	
 setup_bg_nametable:
 	LDA $2002                  ; Latch and reset hi/lo pairs for $2006 register.
-	LDA #$20
+	LDA #$21
 	STA $2006
-	LDA #$20                   ; We start at the second row because NTSC NES Crops the first 8pixels (first row)	
+	LDA #$E0
 	STA $2006                  ; Write to $2000, where the BG nametable starts.
 
 	LDX #$00
@@ -81,7 +81,7 @@ setup_bg_nametable_loop:
 	LDA bg_nametable_data, x
 	STA $2007
 	INX
-	CPX #$40                   ; 128 bytes.
+	CPX #$20                   ; 32 bytes.
 	BNE setup_bg_nametable_loop
 
 setup_bg_attr:
@@ -92,11 +92,11 @@ setup_bg_attr:
 	STA $2006
 	
 	LDX #$00
+	LDA #$00
 setup_bg_attr_loop:
-	LDA bg_attr_data, x
 	STA $2007
 	INX
-	CPX #$08
+	CPX #$40
 	BNE setup_bg_attr_loop
 	
 	LDA #%10010000             ; Genrale NMI Interrupts on vblank, sprite pat tab 0, bg pat tab 1
@@ -107,7 +107,6 @@ setup_bg_attr_loop:
 
 forever:
 	JMP forever
-
 
 ;=============================
 ; PRG BANK 1
@@ -132,23 +131,16 @@ sprite_attr_data:
 	.db $88, $35, $00, $88     ; Sprite 4
 
 bg_nametable_data:
-	.db $20, $0E, $15, $0C
-	.db $18, $16, $0E, $24
-	.db $20, $0E, $15, $0C
-	.db $18, $16, $0E, $24
-	.db $20, $0E, $15, $0C
-	.db $18, $16, $0E, $24
-	.db $20, $0E, $15, $0C
-	.db $18, $16, $0E, $24     ; Row 1
-	.db $20, $0E, $15, $0C
-	.db $18, $16, $0E, $24
-	.db $20, $0E, $15, $0C
-	.db $18, $16, $0E, $24
-	.db $20, $0E, $15, $0C
-	.db $18, $16, $0E, $24
-	.db $20, $0E, $15, $0C
-	.db $18, $16, $0E, $24     ; Row 2 
+	.db $24, $24, $24, $24
+	.db $1B, $0E, $0B, $0A
+	.db $22, $01, $09, $08
+	.db $02, $24, $28, $24
+	.db $19, $1B, $0E, $1C
+	.db $1C, $24, $1C, $1D
+	.db $0A, $1B, $1D, $2B
+	.db $24, $24, $24, $24     ; Row 1
 
+; Unused for now.
 bg_attr_data:
 	.db %00000000
 	.db %00000000
