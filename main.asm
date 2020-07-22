@@ -115,11 +115,11 @@ forever:
 	.org $E000
 
 palette_data:
-	.db $22, $29, $1A, $0F     ;background palette data
-	.db $22, $36, $17, $0F
-	.db $22, $30, $21, $0F
-	.db $22, $27, $17, $0F
-	.db $22, $1C, $15, $14     ;sprite palette data 
+	.db $0F, $20, $01, $00     ;background palette data
+	.db $22, $20, $01, $00
+	.db $22, $20, $01, $00
+	.db $22, $20, $01, $00
+	.db $0F, $1C, $15, $14     ;sprite palette data 
 	.db $22, $02, $38, $3C
 	.db $22, $1C, $15, $14
 	.db $22, $02, $38, $3C 
