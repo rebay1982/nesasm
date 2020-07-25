@@ -3,8 +3,8 @@ INPUT_READ_CTRL_1:
 	STA $4016                  ; Need to write $01 and $00 to $4016 for controller to latch values
 	LDA #$00
 	STA $4016
-	LDX #$08                   ; Read all 8 buttons.
 
+	LDX #$08                   ; Read all 8 buttons.
 read_ctrl_1_loop:
 	LDA $4016
 	LSR A                      ; BIT 0 of A -> Carry

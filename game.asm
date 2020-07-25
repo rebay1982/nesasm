@@ -1,0 +1,22 @@
+UPDATE_GAME:
+
+; Find out which state to update.
+	CLC	
+	LDA	state
+	LSR A
+	BCS update_title
+	
+	RTS
+
+update_title:
+	LDA buttons_1
+	AND #%00001000             ; Start button is bit 3
+	BEQ update_title_return 
+	
+	ASL A                      ; C <- [76543210] <- 0	
+
+update_title_return:
+	RTS	
+
+
+

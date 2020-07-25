@@ -1,5 +1,6 @@
 	.include "input.asm"
-
+	;.include "render.asm"
+	.include "game.asm"
 NMI:
 	; NOTE - We're destroying registers
 	;  Might want to push them on the
@@ -9,7 +10,11 @@ NMI:
 	LDA #$02
 	STA $4014                  ; Init DMA transfer of $0200 to PPU Internal OAM memory
 
-	JSR INPUT_READ_CTRL_1
+	;JSR INPUT_READ_CTRL_1
+
+	;JSR UPDATE_GAME
+
+	;JSR RENDER_BG
 
 	LDA #%10010000             ; Genrale NMI Interrupts on vblank, sprite pat tab 0, bg pat tab 1
 	STA $2000

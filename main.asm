@@ -3,7 +3,7 @@
 	.inesmap 0                 ; mapper 0 = NROM, no bank swapping
 	.inesmir 1                 ; background mirroring (ignore for now)
 
-
+; Memory already gets cleared here.
 	.rsset $0000               ; Start data at memory address 0.
 score_1 .rs 1
 score_2 .rs 1
@@ -17,9 +17,14 @@ state .rs 1                  ; Contains the game state.
 	.bank 0
 	.org $C000
 	.include "nmi.asm"
+	.include "render.asm"
 	.include "reset.asm"
+MAIN:
+	;;JSR RESET
 
-main:
+	; Set state
+	LDA #$01
+	STA state
 
 ; This code sets up the PPU's base memory to the background palette
 setup_palettes:
@@ -46,44 +51,6 @@ setup_sprite_data_loop:
 	CPX #$10
 	BNE setup_sprite_data_loop
 
-; Clear title screen
-clr_bg_nt:
-	LDA $2002                  ; Reset hi/lo pair for $2006 register.
-	LDA #$20
-	STA $2006
-	LDA #$00
-	STA $2006
-
-	LDY	#$00
-clr_bg_nt_loop_y:
-	LDX #$00
-clr_bg_nt_loop_x:
-	LDA #$24
-	STA $2007
-	INX
-	CPX #$FF
-	BNE clr_bg_nt_loop_x
-
-	INY
-	CPY #$04
-	BNE clr_bg_nt_loop_y
-
-; Write title screen.	
-setup_bg_nametable:
-	LDA $2002                  ; Latch and reset hi/lo pairs for $2006 register.
-	LDA #$21
-	STA $2006
-	LDA #$E0
-	STA $2006                  ; Write to $2000, where the BG nametable starts.
-
-	LDX #$00
-setup_bg_nametable_loop:
-	LDA bg_nametable_data, x
-	STA $2007
-	INX
-	CPX #$20                   ; 32 bytes.
-	BNE setup_bg_nametable_loop
-
 setup_bg_attr:
 	LDA $2002
 	LDA #$23
@@ -104,6 +71,7 @@ setup_bg_attr_loop:
 
 	LDA #%00011110             ; enable sprites, enable bg, left clip off.
 	STA $2001
+
 
 forever:
 	JMP forever
@@ -130,7 +98,7 @@ sprite_attr_data:
 	.db $88, $34, $00, $80     ; Sprite 3
 	.db $88, $35, $00, $88     ; Sprite 4
 
-bg_nametable_data:
+title_screen_data:
 	.db $24, $24, $24, $24
 	.db $1B, $0E, $0B, $0A
 	.db $22, $01, $09, $08

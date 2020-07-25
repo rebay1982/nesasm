@@ -35,7 +35,7 @@ clrmem:                      ; This clears address $0000 to $0800
 
 	JSR vblankwait
 
-
+	RTS
 
 
 
