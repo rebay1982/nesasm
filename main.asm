@@ -3,7 +3,6 @@
 	.inesmap 0                 ; mapper 0 = NROM, no bank swapping
 	.inesmir 1                 ; background mirroring (ignore for now)
 
-; Memory already gets cleared here.
 	.rsset $0000               ; Start data at memory address 0.
 score_1 .rs 1
 score_2 .rs 1
@@ -16,13 +15,14 @@ state .rs 1                  ; Contains the game state.
 ;=============================
 	.bank 0
 	.org $C000
-	.include "nmi.asm"
+
+	.include "input.asm"
 	.include "render.asm"
+	.include "game.asm"
+	.include "nmi.asm"
 	.include "reset.asm"
 MAIN:
-	;;JSR RESET
-
-	; Set state
+; Set state
 	LDA #$01
 	STA state
 
@@ -65,6 +65,8 @@ setup_bg_attr_loop:
 	INX
 	CPX #$40
 	BNE setup_bg_attr_loop
+
+	JSR RENDER_BG
 	
 	LDA #%10010000             ; Genrale NMI Interrupts on vblank, sprite pat tab 0, bg pat tab 1
 	STA $2000

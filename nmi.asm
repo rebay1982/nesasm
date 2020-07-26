@@ -1,11 +1,12 @@
-	.include "input.asm"
-	;.include "render.asm"
-	.include "game.asm"
 NMI:
 	; NOTE - We're destroying registers
 	;  Might want to push them on the
 	;  stack and restore when done.
+	;LDA #%00010000             ; Disable NMI generation for vblank
+	;STA $2000
+
 	LDA #$00
+	;STA $2001                  ; Disable rendering
 	STA $2003
 	LDA #$02
 	STA $4014                  ; Init DMA transfer of $0200 to PPU Internal OAM memory

@@ -3,6 +3,13 @@ vblankwait:                  ; Second wait for vblank, PPU is ready after this
 	BPL vblankwait             ; if SR bit N is 0, branch.
 	RTS
 
+; Unless we save and restore 
+; the stack pointer and memory
+; to its previous state, this 
+; cannot be used as a 
+; subroutine because it 
+; destroys the stack memory at
+; $0100 
 RESET:
 	SEI                        ; Disable IRQs
 	CLD                        ; Disable Decimal mode (for comp with 6502 -- NES doesn't have decimal mode.
@@ -10,8 +17,8 @@ RESET:
 	STX $4017                  ; 40 sets bit 6 of $4017 -> if set, the frame interrupt flag is cleared.
 	
 	LDX #$FF
-	TXS                        ; Store stack pointer in X
-	INX                        ; Inc X, should be 0 apparently.
+	TXS                        ; Store X into stack pointer
+	INX                        ; X == 0 now. 
 
 	STX $2000                  ; Disable NMI Interrupt
 	STX $2001                  ; Disable rendering
@@ -22,7 +29,7 @@ RESET:
 clrmem:                      ; This clears address $0000 to $0800
 	LDA #$00
 	STA $0000, x
-	STA $0100, x
+	STA $0100, x               ; This is the stack space.
 	STA $0300, x
 	STA $0400, x
 	STA $0500, x
@@ -35,7 +42,7 @@ clrmem:                      ; This clears address $0000 to $0800
 
 	JSR vblankwait
 
-	RTS
+	;RTS                       ; See comment at the top of RESET label
 
 
 

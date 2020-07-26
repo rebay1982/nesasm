@@ -23,7 +23,7 @@ clr_bg_loop_x:
 	BNE clr_bg_loop_y
 
 ; Find out which screen to render
-	CLC	
+	CLC
 	LDA	state
 	LSR A
 	BCS render_title
@@ -54,7 +54,6 @@ render_title_loop:
 render_game:
 
 	RTS
-
 
 render_game_over:
 
