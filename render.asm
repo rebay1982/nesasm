@@ -1,6 +1,6 @@
 ; File that contains all
 ; rendering subroutines.
-RENDER_BG:
+CLR_BG:
 ; Clear title screen
 	LDA $2002                  ; Reset hi/lo pair for $2006 register.
 	LDA #$20
@@ -22,6 +22,9 @@ clr_bg_loop_x:
 	CPY #$04
 	BNE clr_bg_loop_y
 
+	RTS
+
+RENDER_BG:
 ; Find out which screen to render
 	CLC
 	LDA	state
@@ -35,20 +38,30 @@ clr_bg_loop_x:
 	RTS
 
 render_title:
-	LDA $2002                  ; Latch and reset hi/lo pairs for $2006 register.
-	LDA #$21
-	STA $2006
-	LDA #$E0
-	STA $2006                  ; Write to $2000, where the BG nametable starts.
-
 	LDX #$00
-render_title_loop:
-	LDA title_screen_data, x
-	STA $2007
+	LDA #$20
+	STA bg_draw_buffer, x
+	
 	INX
-	CPX #$20                   ; 32 bytes.
+	LDA #$21
+	STA bg_draw_buffer, x
+
+	INX
+	LDA #$E0
+	STA bg_draw_buffer, x
+
+	LDY #$00
+render_title_loop:
+	INX
+	LDA title_screen_data, y
+	STA bg_draw_buffer, x
+	INY
+	CPY #$20                   ; 32 bytes.
 	BNE render_title_loop
 
+	INX
+	LDA #$00
+	STA bg_draw_buffer, x      ; End draw buffer.
 	RTS
 
 render_game:

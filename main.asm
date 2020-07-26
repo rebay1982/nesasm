@@ -3,12 +3,19 @@
 	.inesmap 0                 ; mapper 0 = NROM, no bank swapping
 	.inesmir 1                 ; background mirroring (ignore for now)
 
+bg_draw_buffer = $0300
+
 	.rsset $0000               ; Start data at memory address 0.
 score_1 .rs 1
 score_2 .rs 1
 buttons_1 .rs 1              ; Buttons for controller 1.
 buttons_2 .rs 2              ; Buttons for controller 2.
 state .rs 1                  ; Contains the game state.
+
+sleep .rs 1                  ; Sleep state counter.
+request_dma .rs 1            ; Request DMA transfer for sprites.
+request_draw .rs 1           ; Request that the PPU draws during vblank.
+
 
 ;=============================
 ; PRG BANK 0
@@ -21,10 +28,6 @@ state .rs 1                  ; Contains the game state.
 	.include "game.asm"
 	.include "nmi.asm"
 	.include "reset.asm"
-MAIN:
-; Set state
-	LDA #$01
-	STA state
 
 ; This code sets up the PPU's base memory to the background palette
 setup_palettes:
@@ -66,17 +69,38 @@ setup_bg_attr_loop:
 	CPX #$40
 	BNE setup_bg_attr_loop
 
-	JSR RENDER_BG
+
+	JSR CLR_BG
 	
 	LDA #%10010000             ; Genrale NMI Interrupts on vblank, sprite pat tab 0, bg pat tab 1
 	STA $2000
 
-	LDA #%00011110             ; enable sprites, enable bg, left clip off.
-	STA $2001
+
+;============================
+; MAIN
+;============================
+MAIN:
+; Init game state
+	LDA #$01
+	STA state
+
+loop:
+	JSR RENDER_BG
+	INC request_draw 
+
+	JSR SLEEP
+	JMP loop
 
 
-forever:
-	JMP forever
+
+SLEEP:
+	INC sleep
+sleep_loop:
+	LDA sleep
+	BNE sleep_loop
+	
+	RTS
+
 
 ;=============================
 ; PRG BANK 1

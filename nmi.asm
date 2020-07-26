@@ -1,24 +1,26 @@
 NMI:
-	; NOTE - We're destroying registers
-	;  Might want to push them on the
-	;  stack and restore when done.
-	;LDA #%00010000             ; Disable NMI generation for vblank
-	;STA $2000
+
+; Backup registers
+	PHA
+	TXA
+	PHA
+	TYA
+	PHA
 
 	LDA #$00
-	;STA $2001                  ; Disable rendering
+	STA $2001                  ; Disable rendering
 	STA $2003
 	LDA #$02
 	STA $4014                  ; Init DMA transfer of $0200 to PPU Internal OAM memory
 
-	;JSR INPUT_READ_CTRL_1
+;draw bg if needed
+	LDA request_draw
+	BEQ draw_complete
 
-	;JSR UPDATE_GAME
+	JSR DRAW_BG
+	DEC request_draw
 
-	;JSR RENDER_BG
-
-	LDA #%10010000             ; Genrale NMI Interrupts on vblank, sprite pat tab 0, bg pat tab 1
-	STA $2000
+draw_complete:
 
 	LDA #%00011110             ; enable sprites, enable bg
 	STA $2001
@@ -27,4 +29,51 @@ NMI:
 	STA $2005                  ; Horizontal scroll pos = 0
 	STA $2005                  ; Vertical scroll pos = 0
 
-	RTI                        ; Return from Interrupt	
+	LDA #$00
+	STA sleep 
+
+; Restore registers
+	PLA
+	TAY
+	PLA
+	TAX
+	PLA
+
+	RTI                        ; Return from Interrupt
+
+; byte 0 = length
+; byte 1 = (HI) PPU memory destination
+; byte 2 = (LO) PPU memory destination
+; byte 3 = data
+;
+; if byte 0 = 0; stop
+DRAW_BG:
+	LDX #$00
+
+draw_bg_cmd_loop:
+	LDY bg_draw_buffer, x
+	BEQ exit_draw_bg
+	INX
+
+	BIT $2002
+	LDA bg_draw_buffer, x
+	STA $2006
+	INX
+
+	LDA bg_draw_buffer, x
+	STA $2006
+
+draw_bg_loop:
+	INX
+
+	LDA bg_draw_buffer, x
+	STA $2007
+
+	DEY
+	BNE draw_bg_loop
+
+	JMP draw_bg_cmd_loop
+
+exit_draw_bg:
+	RTS
+
