@@ -34,7 +34,8 @@ RENDER_BG:
 	BCS render_game
 	LSR A
 	BCS render_game_over
-	
+
+render_bg_exit:
 	RTS
 
 render_title:

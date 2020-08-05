@@ -53,7 +53,6 @@ setup_sprite_data_loop:
 	INX
 	CPX #$10
 	BNE setup_sprite_data_loop
-
 setup_bg_attr:
 	LDA $2002
 	LDA #$23
@@ -84,9 +83,16 @@ MAIN:
 	LDA #$01
 	STA state
 
-loop:
+; Prepare the titlescreen background
 	JSR RENDER_BG
 	INC request_draw 
+
+loop:
+; Read Input
+	JSR INPUT_READ_CTRL
+
+; Update Game
+	JSR UPDATE_GAME
 
 	JSR SLEEP
 	JMP loop

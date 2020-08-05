@@ -55,7 +55,7 @@ draw_bg_cmd_loop:
 	BEQ exit_draw_bg
 	INX
 
-	BIT $2002
+	BIT $2002                  ; Latch register $2006 on PPU
 	LDA bg_draw_buffer, x
 	STA $2006
 	INX

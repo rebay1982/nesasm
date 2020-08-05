@@ -12,11 +12,10 @@ update_title:
 	LDA buttons_1
 	AND #%00001000             ; Start button is bit 3
 	BEQ update_title_return 
-	
-	ASL A                      ; C <- [76543210] <- 0	
+
+	ASL state                      ; C <- [76543210] <- 0
+	INC request_draw
 
 update_title_return:
 	RTS	
-
-
 
