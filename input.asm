@@ -1,6 +1,6 @@
 INPUT_READ_CTRL:
 	LDA #$01
-	STA $4016                  ; Need to write $01 and $00 to $4016 for controller to latch values
+	STA $4015                  ; Need to write $01 and $00 to $4016 for controller to latch values
 	LDA #$00
 	STA $4016
 

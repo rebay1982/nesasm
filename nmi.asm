@@ -41,6 +41,11 @@ draw_complete:
 
 	RTI                        ; Return from Interrupt
 
+
+
+;=============================
+; DRAW_BG
+;=============================
 ; byte 0 = length
 ; byte 1 = (HI) PPU memory destination
 ; byte 2 = (LO) PPU memory destination

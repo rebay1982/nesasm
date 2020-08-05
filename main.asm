@@ -11,6 +11,7 @@ score_2 .rs 1
 buttons_1 .rs 1              ; Buttons for controller 1.
 buttons_2 .rs 2              ; Buttons for controller 2.
 state .rs 1                  ; Contains the game state.
+state_trans .rs 1            ; Indicates a state transition
 
 sleep .rs 1                  ; Sleep state counter.
 request_dma .rs 1            ; Request DMA transfer for sprites.
@@ -88,12 +89,24 @@ MAIN:
 	INC request_draw 
 
 loop:
+
+loop_input:
 ; Read Input
 	JSR INPUT_READ_CTRL
 
+loop_update:
 ; Update Game
 	JSR UPDATE_GAME
 
+loop_render:
+; check if state transition happened.
+	LDA state_trans
+	BEQ loop_sleep
+	DEC state_trans
+	JSR RENDER_BG
+	INC request_draw           ; State changed, request a new draw
+
+loop_sleep:
 	JSR SLEEP
 	JMP loop
 
@@ -139,6 +152,18 @@ title_screen_data:
 	.db $1C, $24, $1C, $1D
 	.db $0A, $1B, $1D, $2B
 	.db $24, $24, $24, $24     ; Row 1
+
+game_screen_data:
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $19, $15, $0A, $22
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $10, $0A, $16, $0E
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24     ; Row 1
+
+
 
 ; Unused for now.
 bg_attr_data:

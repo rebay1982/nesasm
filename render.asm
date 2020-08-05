@@ -24,6 +24,15 @@ clr_bg_loop_x:
 
 	RTS
 
+
+;=============================
+; RENDER_BG
+;=============================
+; Find a better way.  Code is
+; duplicated only because the
+; source address  is not in 
+; the same spot.
+;=============================
 RENDER_BG:
 ; Find out which screen to render
 	CLC
@@ -37,6 +46,8 @@ RENDER_BG:
 
 render_bg_exit:
 	RTS
+
+
 
 render_title:
 	LDX #$00
@@ -65,9 +76,36 @@ render_title_loop:
 	STA bg_draw_buffer, x      ; End draw buffer.
 	RTS
 
-render_game:
 
+
+render_game:
+	LDX #$00
+	LDA #$20
+	STA bg_draw_buffer, x
+
+	INX
+	LDA #$21
+	STA bg_draw_buffer, x
+
+	INX
+	LDA #$E0
+	STA bg_draw_buffer, x
+
+	LDY #$00
+render_game_loop:
+	INX
+	LDA game_screen_data, y
+	STA bg_draw_buffer, x
+	INY
+	CPY #$20                   ; 32 bytes.
+	BNE render_game_loop
+
+	INX
+	LDA #$00
+	STA bg_draw_buffer, x      ; End draw buffer.
 	RTS
+
+
 
 render_game_over:
 
