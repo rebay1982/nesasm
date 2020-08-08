@@ -68,7 +68,7 @@ render_title_loop:
 	LDA title_screen_data, y
 	STA bg_draw_buffer, x
 	INY
-	CPY #$20                   ; 32 bytes.
+	CPY bg_draw_buffer         ; 32 bytes.
 	BNE render_title_loop
 
 	INX
@@ -98,7 +98,7 @@ render_game_loop:
 	LDA game_screen_data, y
 	STA bg_draw_buffer, x
 	INY
-	CPY #$20                   ; 32 bytes.
+	CPY bg_draw_buffer         ; 32 bytes.
 	BNE render_game_loop
 
 	INX
@@ -112,3 +112,43 @@ render_game_loop:
 render_game_over:
 
 	RTS
+
+;=============================
+; DRAW_BG
+;=============================
+; byte 0 = length
+; byte 1 = (HI) PPU memory destination
+; byte 2 = (LO) PPU memory destination
+; byte 3 = data
+;
+; if byte 0 = 0; stop
+DRAW_BG:
+	LDX #$00
+
+draw_bg_cmd_loop:
+	LDY bg_draw_buffer, x
+	BEQ exit_draw_bg
+	INX
+
+	BIT $2002                  ; Latch register $2006 on PPU
+	LDA bg_draw_buffer, x
+	STA $2006
+	INX
+
+	LDA bg_draw_buffer, x
+	STA $2006
+
+draw_bg_loop:
+	INX
+
+	LDA bg_draw_buffer, x
+	STA $2007
+
+	DEY
+	BNE draw_bg_loop
+
+	JMP draw_bg_cmd_loop
+
+exit_draw_bg:
+	RTS
+
