@@ -46,14 +46,15 @@ setup_palettes_loop:
 	CPX #$20                   ; Check if X == 32
 	BNE setup_palettes_loop
 
-setup_sprite_data:
-	LDX #$00
-setup_sprite_data_loop:
-	LDA sprite_attr_data, x
-	STA $0200, x
-	INX
-	CPX #$10
-	BNE setup_sprite_data_loop
+;setup_sprite_data:
+;	LDX #$00
+;setup_sprite_data_loop:
+;	LDA sprite_attr_data, x
+;	STA $0200, x
+;	INX
+;	CPX #$10
+;	BNE setup_sprite_data_loop
+
 setup_bg_attr:
 	LDA $2002
 	LDA #$23
@@ -72,7 +73,7 @@ setup_bg_attr_loop:
 
 	JSR CLR_BG
 	
-	LDA #%10010000             ; Genrale NMI Interrupts on vblank, sprite pat tab 0, bg pat tab 1
+	LDA #%10010000             ; Generate NMI Interrupts on vblank, sprite pat tab 0, bg pat tab 1
 	STA $2000
 
 

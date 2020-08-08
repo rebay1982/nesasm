@@ -74,6 +74,7 @@ render_title_loop:
 	INX
 	LDA #$00
 	STA bg_draw_buffer, x      ; End draw buffer.
+
 	RTS
 
 
@@ -103,6 +104,7 @@ render_game_loop:
 	INX
 	LDA #$00
 	STA bg_draw_buffer, x      ; End draw buffer.
+
 	RTS
 
 
