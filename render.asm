@@ -49,69 +49,86 @@ render_bg_exit:
 
 
 
+;=============================
+; RENDER TITLE
+;=============================
 render_title:
-	LDX #$00
-	LDA #$20
-	STA bg_draw_buffer, x
-	
-	INX
-	LDA #$21
-	STA bg_draw_buffer, x
-
-	INX
+	LDA #LOW(title_screen_data)
+	STA params
+	LDA #HIGH(title_screen_data)
+	STA params+1
 	LDA #$E0
-	STA bg_draw_buffer, x
+	STA params+2
+	LDA #$21
+	STA params+3
+	LDA #$20
+	STA params+4
 
-	LDY #$00
-render_title_loop:
-	INX
-	LDA title_screen_data, y
-	STA bg_draw_buffer, x
-	INY
-	CPY bg_draw_buffer         ; 32 bytes.
-	BNE render_title_loop
-
-	INX
-	LDA #$00
-	STA bg_draw_buffer, x      ; End draw buffer.
+	JSR RENDER_MULTI
 
 	RTS
 
-
-
+;=============================
+; RENDER GAME
+;=============================
 render_game:
-	LDX #$00
-	LDA #$20
-	STA bg_draw_buffer, x
-
-	INX
-	LDA #$21
-	STA bg_draw_buffer, x
-
-	INX
+	LDA #LOW(game_screen_data)
+	STA params
+	LDA #HIGH(game_screen_data)
+	STA params+1
 	LDA #$E0
-	STA bg_draw_buffer, x
+	STA params+2
+	LDA #$21
+	STA params+3
+	LDA #$20
+	STA params+4
 
-	LDY #$00
-render_game_loop:
-	INX
-	LDA game_screen_data, y
-	STA bg_draw_buffer, x
-	INY
-	CPY bg_draw_buffer         ; 32 bytes.
-	BNE render_game_loop
-
-	INX
-	LDA #$00
-	STA bg_draw_buffer, x      ; End draw buffer.
+	JSR RENDER_MULTI
 
 	RTS
-
-
 
 render_game_over:
 
 	RTS
+
+
+;=============================
+; RENDER MULTI
+;=============================
+; params[0] Lo src address
+; params[1] Hi src address
+; params[2] Lo dst address
+; params[3] Hi dst address
+; params[4] Length
+;=============================
+RENDER_MULTI:
+	LDX #$00
+	LDA params+4
+	STA bg_draw_buffer, x
+
+	INX
+	LDA params+3
+	STA bg_draw_buffer, x
+
+	INX
+	LDA params+2
+	STA bg_draw_buffer, x
+
+	LDY #$00
+render_loop:
+	INX
+	LDA [params], y
+	STA bg_draw_buffer, x
+	INY
+	CPY bg_draw_buffer         ; 32 bytes.
+	BNE render_loop
+
+	INX
+	LDA #$00
+	STA bg_draw_buffer, x      ; End draw buffer.
+
+	RTS
+
 
 ;=============================
 ; DRAW_BG

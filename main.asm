@@ -17,6 +17,8 @@ sleep .rs 1                  ; Sleep state counter.
 request_dma .rs 1            ; Request DMA transfer for sprites.
 request_draw .rs 1           ; Request that the PPU draws during vblank.
 
+; This has to be in zero page
+params .rs 32
 
 ;=============================
 ; PRG BANK 0
@@ -104,6 +106,7 @@ loop_render:
 	LDA state_trans
 	BEQ loop_sleep
 	DEC state_trans
+
 	JSR RENDER_BG
 	INC request_draw           ; State changed, request a new draw
 
