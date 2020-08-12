@@ -17,8 +17,13 @@ sleep .rs 1                  ; Sleep state counter.
 request_dma .rs 1            ; Request DMA transfer for sprites.
 request_draw .rs 1           ; Request that the PPU draws during vblank.
 
+sprite_pos_x .rs 1           ; Sprite X coordinate
+sprite_pos_y .rs 1           ; Sprite Y coordinate
+
 ; This has to be in zero page
 params .rs 32
+
+
 
 ;=============================
 ; PRG BANK 0
@@ -27,7 +32,7 @@ params .rs 32
 	.org $C000
 
 	.include "input.asm"
-	.include "render.asm"
+	.include "render_bg.asm"
 	.include "game.asm"
 	.include "nmi.asm"
 	.include "reset.asm"
@@ -54,7 +59,7 @@ setup_palettes_loop:
 ;	LDA sprite_attr_data, x
 ;	STA $0200, x
 ;	INX
-;	CPX #$10
+;	CPX #$04
 ;	BNE setup_sprite_data_loop
 
 setup_bg_attr:
@@ -142,10 +147,7 @@ palette_data:
 	.db $22, $02, $38, $3C 
 
 sprite_attr_data:
-	.db $80, $32, $00, $80     ; Sprite 1
-	.db $80, $33, $00, $88     ; Sprite 2
-	.db $88, $34, $00, $80     ; Sprite 3
-	.db $88, $35, $00, $88     ; Sprite 4
+	.db $80, $75, $00, $80     ; Sprite 1
 
 title_screen_data:
 	.db $24, $24, $24, $24
@@ -160,12 +162,20 @@ title_screen_data:
 game_screen_data:
 	.db $24, $24, $24, $24
 	.db $24, $24, $24, $24
-	.db $19, $15, $0A, $22
 	.db $24, $24, $24, $24
 	.db $24, $24, $24, $24
-	.db $10, $0A, $16, $0E
 	.db $24, $24, $24, $24
-	.db $24, $24, $24, $24     ; Row 1
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
+;	.db $24, $24, $24, $24
+;	.db $24, $24, $24, $24
+;	.db $19, $15, $0A, $22
+;	.db $24, $24, $24, $24
+;	.db $24, $24, $24, $24
+;	.db $10, $0A, $16, $0E
+;	.db $24, $24, $24, $24
+;	.db $24, $24, $24, $24     ; Row 1
 
 
 
@@ -174,11 +184,11 @@ bg_attr_data:
 	.db %00000000
 	.db %00000000
 	.db %00000000
-  .db %00000000
 	.db %00000000
 	.db %00000000
 	.db %00000000
-  .db %00000000
+	.db %00000000
+	.db %00000000
 
 	.org $FFFA
 interrupt_vector:
