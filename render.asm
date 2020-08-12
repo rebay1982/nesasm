@@ -94,6 +94,10 @@ render_game_over:
 
 ;=============================
 ; RENDER MULTI
+;============================-
+; General purpose routine to
+; write rendering requests at
+; $0300 for the PPU to draw. 
 ;=============================
 ; params[0] Lo src address
 ; params[1] Hi src address
@@ -138,7 +142,8 @@ render_loop:
 ; byte 2 = (LO) PPU memory destination
 ; byte 3 = data
 ;
-; if byte 0 = 0; stop
+; When byte 0 -- 0x00, stop.
+;=============================
 DRAW_BG:
 	LDX #$00
 
