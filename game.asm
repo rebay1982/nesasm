@@ -33,6 +33,82 @@ update_game_return:
 
 
 ;=============================
+; update_ball_dir
+;=============================
+; Routine to update the ball's
+; direction based on its
+; current position.
+;=============================
+; When we hit screen top, set
+;   bit 0 of ball_dir to 1.
+; When we hit screen bottom,
+;  set bit 0 of ball_dir to 0.
+; When we hit screen left, set
+;  bit 1 if ball_dir to 1.
+; When we hit screen right,
+;  set bit 1 of ball_dir to 0.
+;=============================
+; + Performance could be
+;   better if registers were
+;   better used instead of
+;   always loading into
+;   accumulator.
+; + Use parameters instead
+;   of $0200 and $0203
+;=============================
+update_ball_dir:
+check_top:
+	LDA $0200
+	CMP #wall_top
+	BNE check_bottom
+
+	LDA ball_dir
+	ORA #$01
+	STA ball_dir
+
+	JSR inc_bounce_count
+
+	JMP check_left             ; If top is eq to 0, no need to check bottom.
+
+check_bottom:
+	CMP #wall_bottom
+	BNE check_left
+
+	LDA ball_dir
+	AND #%11111110
+	STA ball_dir
+
+	JSR inc_bounce_count
+
+check_left:
+	LDA $0203                  ; X pos is sprite attribute data's 4th byte. (byte 3)
+	CMP #wall_left
+	BNE check_right
+
+	LDA ball_dir
+	ORA #$02
+	STA ball_dir
+
+	JSR inc_bounce_count
+
+	JMP check_done
+
+check_right:
+	CMP #wall_right
+	BNE check_done
+
+	LDA ball_dir
+	AND #%11111101
+	STA ball_dir
+
+	JSR inc_bounce_count
+
+check_done:
+	RTS
+
+
+
+;=============================
 ; move_ball
 ;=============================
 ; Routine dedicated to move
@@ -74,69 +150,29 @@ move_ball_return:
 
 
 ;=============================
-; update_ball_dir
+; inc_bounce_count
 ;=============================
-; Routine to update the ball's
-; direction based on its
-; current position.
+; Routine to count (16bits) 
+;  the number of times the 
+;  ball nounces.
 ;=============================
-; When we hit screen top, set
-;   bit 0 of ball_dir to 1.
-; When we hit screen bottom,
-;  set bit 0 of ball_dir to 0.
-; When we hit screen left, set
-;  bit 1 if ball_dir to 1.
-; When we hit screen right,
-;  set bit 1 of ball_dir to 0.
+; Accumulator is saved.
+; CPU Status is saved.
 ;=============================
-; + Performance could be
-;   better if registers were
-;   better used instead of
-;   always loading into
-;   accumulator.
-; + Use parameters instead
-;   of $0200 and $0203
-;=============================
-update_ball_dir:
-check_top:
-	LDA $0200
-	CMP #wall_top
-	BNE check_bottom
+inc_bounce_count:
+	PHA
+	PHS
 
-	LDA ball_dir
-	ORA #$01
-	STA ball_dir
+	LDA bounce_count_lo
+	CLC
+	ADC #$01
+	STA bounce_count_lo
+	LDA bounce_count_hi
+	ADC #$00
+	STA bounce_count_hi
 
-	JMP check_left             ; If top is eq to 0, no need to check bottom.
+	PLS
+	PLA
 
-check_bottom:
-	CMP #wall_bottom
-	BNE check_left
-
-	LDA ball_dir
-	AND #%11111110
-	STA ball_dir
-
-check_left:
-	LDA $0203                  ; X pos is sprite attribute data's 4th byte. (byte 3)
-	CMP #wall_left
-	BNE check_right
-
-	LDA ball_dir
-	ORA #$02
-	STA ball_dir
-
-	JMP check_done
-
-check_right:
-	CMP #wall_right
-	BNE check_done
-
-	LDA ball_dir
-	AND #%11111101
-	STA ball_dir
-
-check_done:
 	RTS
-
 

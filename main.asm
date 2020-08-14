@@ -28,6 +28,9 @@ request_draw .rs 1           ; Request that the PPU draws during vblank.
 
 ball_dir .rs 1               ; Defines in which direction the ball should be going.
 
+bounce_count_lo .rs 1        ; Lo byte of bounce count.
+bounce_count_hi .rs 1        ; Hi byte of bounce count.
+
 ; This has to be in zero page
 params .rs 32
 
