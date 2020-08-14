@@ -161,7 +161,7 @@ move_ball_return:
 ;=============================
 inc_bounce_count:
 	PHA
-	PHS
+	PHP
 
 	LDA bounce_count_lo
 	CLC
@@ -171,7 +171,7 @@ inc_bounce_count:
 	ADC #$00
 	STA bounce_count_hi
 
-	PLS
+	PLP
 	PLA
 
 	RTS

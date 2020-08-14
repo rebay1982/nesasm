@@ -63,6 +63,8 @@ render_title:
 	STA params+3
 	LDA #$20
 	STA params+4
+	LDA #$00
+	STA params+5
 
 	JSR RENDER_MULTI
 
@@ -72,6 +74,8 @@ render_title:
 ; RENDER GAME
 ;=============================
 render_game:
+
+; Clear previous screen
 	LDA #LOW(game_screen_data)
 	STA params
 	LDA #HIGH(game_screen_data)
@@ -82,6 +86,23 @@ render_game:
 	STA params+3
 	LDA #$20
 	STA params+4
+	LDA #$00
+	STA params+5
+
+	JSR RENDER_MULTI
+
+; Render state screen return
+	LDA #LOW(game_screen_data_2)
+	STA params
+	LDA #HIGH(game_screen_data_2)
+	STA params+1
+	LDA #$20
+	STA params+2
+	LDA #$20
+	STA params+3
+	LDA #$10
+	STA params+4
+	INC params+5
 
 	JSR RENDER_MULTI
 
@@ -104,9 +125,31 @@ render_game_over:
 ; params[2] Lo dst address
 ; params[3] Hi dst address
 ; params[4] Length
+; params[5] Command #
 ;=============================
+; Commands allow you to
+;  prepare multiple rendering
+;  commands in a single draw
+;  call.
 RENDER_MULTI:
+; Find X
 	LDX #$00
+	LDY params+5
+
+render_init_x_loop:
+	CPY #$00
+	BEQ render_init_x_done
+
+	TXA
+	CLC
+	ADC bg_draw_buffer, x
+	ADC #$03
+	TAX
+	DEY
+
+	JMP render_init_x_loop
+
+render_init_x_done:
 	LDA params+4
 	STA bg_draw_buffer, x
 
@@ -124,7 +167,7 @@ render_loop:
 	LDA [params], y
 	STA bg_draw_buffer, x
 	INY
-	CPY bg_draw_buffer         ; 32 bytes.
+	CPY params+4
 	BNE render_loop
 
 	INX
@@ -169,6 +212,7 @@ draw_bg_loop:
 	DEY
 	BNE draw_bg_loop
 
+	INX
 	JMP draw_bg_cmd_loop
 
 exit_draw_bg:

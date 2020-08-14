@@ -7,7 +7,7 @@
 ; CONSTANTS
 ;============================
 bg_draw_buffer = $0300
-wall_top = $08               ; NTSC NES doesn't render the first 8pixel row to screen.
+wall_top = $10               ; NTSC NES doesn't render the first 8pixel row to screen.
 wall_bottom = $DF            ; 240 - 8, -8 (last 8 rows not shown on screen on NTSC NES)
 wall_right = $F8             ; Decimal 248 (256 - 8) 
 wall_left = $00
@@ -179,16 +179,12 @@ game_screen_data:
 	.db $24, $24, $24, $24
 	.db $24, $24, $24, $24
 	.db $24, $24, $24, $24
-;	.db $24, $24, $24, $24
-;	.db $24, $24, $24, $24
-;	.db $19, $15, $0A, $22
-;	.db $24, $24, $24, $24
-;	.db $24, $24, $24, $24
-;	.db $10, $0A, $16, $0E
-;	.db $24, $24, $24, $24
-;	.db $24, $24, $24, $24     ; Row 1
 
-
+game_screen_data_2:
+	.db $0B, $18, $1E, $17
+	.db $0C, $0E, $24, $28
+	.db $24, $24, $24, $24
+	.db $24, $24, $24, $24
 
 ; Unused for now.
 bg_attr_data:
