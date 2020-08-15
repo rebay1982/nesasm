@@ -23,6 +23,9 @@ update_title_return:
 
 
 update_game:
+
+	JSR input_ball_dir
+
 	JSR update_ball_dir
 
 	JSR move_ball
@@ -106,6 +109,52 @@ check_right:
 check_done:
 	RTS
 
+;=============================
+; input_ball_dir
+;=============================
+; Routine that changes the
+; ball's direction based
+; on input. 
+;=============================
+input_ball_dir:
+input_ball_up:
+	LDA buttons_1
+	AND #$08                   ; Bit 3 == UP
+	BEQ input_ball_down
+
+	LDA ball_dir
+	AND #%11111110
+	STA ball_dir	
+
+input_ball_down:
+	LDA buttons_1
+	AND #$04                   ; Bit 2 == DOWN
+	BEQ input_ball_left
+
+	LDA ball_dir
+	ORA #$01
+	STA ball_dir
+
+input_ball_left:
+	LDA buttons_1
+	AND #$02                   ; Bit 1 == LEFT
+	BEQ input_ball_right
+
+	LDA ball_dir
+	AND #%11111101
+	STA ball_dir
+
+input_ball_right:
+	LDA buttons_1
+	AND #$01                   ; Bit 0 == RIGHT
+	BEQ input_ball_dir_done
+
+	LDA ball_dir
+	ORA #$02
+	STA ball_dir
+
+input_ball_dir_done:
+	RTS
 
 
 ;=============================
@@ -121,11 +170,11 @@ check_done:
 ;=============================
 move_ball:
 move_horizontal:
-	LDA #%00000010
-	AND ball_dir
+	LDA ball_dir
+	AND #%00000010
 
 	BNE move_right
-move_left
+move_left:
 	DEC $0203                  ; byte 3 is X position.
 	JMP move_vertical
 
@@ -133,8 +182,8 @@ move_right:
 	INC $0203                  ; byte 3 is X position.
 
 move_vertical:
-	LDA #%00000001
-	AND ball_dir
+	LDA ball_dir
+	AND #%00000001
 
 	BNE move_down
 move_up:
