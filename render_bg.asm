@@ -24,6 +24,32 @@ clr_bg_loop_x:
 
 	RTS
 
+;=============================
+; RENDER_COUNT
+;=============================
+; Routine to render the 
+; bounce cound bcd.
+;=============================
+RENDER_COUNT:
+; Render state screen return
+	LDA #LOW(bounce_count_bcd)
+	STA params
+	LDA #HIGH(bounce_count_bcd)
+	STA params+1
+	LDA #$29
+	STA params+2
+	LDA #$20
+	STA params+3
+	LDA #$05
+	STA params+4
+	LDA #$00
+	STA params+5
+
+	JSR RENDER_MULTI
+
+	RTS
+
+
 
 ;=============================
 ; RENDER_BG
@@ -44,14 +70,8 @@ RENDER_BG:
 	LSR A
 	BCS render_game_over
 
-render_bg_exit:
 	RTS
 
-
-
-;=============================
-; RENDER TITLE
-;=============================
 render_title:
 	LDA #LOW(title_screen_data)
 	STA params
@@ -70,11 +90,7 @@ render_title:
 
 	RTS
 
-;=============================
-; RENDER GAME
-;=============================
 render_game:
-
 ; Clear previous screen
 	LDA #LOW(game_screen_data)
 	STA params

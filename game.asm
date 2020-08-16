@@ -69,7 +69,7 @@ check_top:
 	ORA #$01
 	STA ball_dir
 
-	JSR inc_bounce_count
+	JSR inc_bounce_count_bcd
 
 	JMP check_left             ; If top is eq to 0, no need to check bottom.
 
@@ -81,7 +81,7 @@ check_bottom:
 	AND #%11111110
 	STA ball_dir
 
-	JSR inc_bounce_count
+	JSR inc_bounce_count_bcd
 
 check_left:
 	LDA $0203                  ; X pos is sprite attribute data's 4th byte. (byte 3)
@@ -92,7 +92,7 @@ check_left:
 	ORA #$02
 	STA ball_dir
 
-	JSR inc_bounce_count
+	JSR inc_bounce_count_bcd
 
 	JMP check_done
 
@@ -104,7 +104,7 @@ check_right:
 	AND #%11111101
 	STA ball_dir
 
-	JSR inc_bounce_count
+	JSR inc_bounce_count_bcd
 
 check_done:
 	RTS
@@ -221,6 +221,39 @@ inc_bounce_count:
 	STA bounce_count_hi
 
 	PLP
+	PLA
+
+	RTS
+
+
+;=============================
+; inc_bounce_count_bcd
+;=============================
+inc_bounce_count_bcd:
+	PHA
+	TXA
+	PHA
+	PHP
+
+	LDX #$04
+
+inc_bounce_count_bcd_loop:
+	INC bounce_count_bcd, x
+	LDA bounce_count_bcd, x
+	CMP #$0A
+	BNE inc_bounce_count_bcd_done
+
+	LDA #$00
+	STA bounce_count_bcd, x
+	DEX                        ; Really? This doesn't affect the V status.
+	TXA
+	CMP #$FF
+	BNE inc_bounce_count_bcd_loop 
+
+inc_bounce_count_bcd_done:
+	PLP
+	PLA
+	TAX
 	PLA
 
 	RTS

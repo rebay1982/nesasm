@@ -18,7 +18,7 @@ wall_left = $00
 ;=============================
 	.rsset $0000               ; Start data at memory address 0.
 buttons_1 .rs 1              ; Buttons for controller 1.
-buttons_2 .rs 2              ; Buttons for controller 2.
+buttons_2 .rs 1              ; Buttons for controller 2.
 state .rs 1                  ; Contains the game state.
 state_trans .rs 1            ; Indicates a state transition
 
@@ -27,9 +27,11 @@ request_dma .rs 1            ; Request DMA transfer for sprites.
 request_draw .rs 1           ; Request that the PPU draws during vblank.
 
 ball_dir .rs 1               ; Defines in which direction the ball should be going.
-
+                             ; Bit 0: 0 == up,   1 == down.
 bounce_count_lo .rs 1        ; Lo byte of bounce count.
 bounce_count_hi .rs 1        ; Hi byte of bounce count.
+
+bounce_count_bcd .rs 5
 
 ; This has to be in zero page
 params .rs 32
@@ -120,11 +122,22 @@ loop_update:
 loop_render:
 ; check if state transition happened.
 	LDA state_trans
-	BEQ loop_sleep
+	BEQ loop_render_no_trans
 	DEC state_trans
 
 	JSR RENDER_BG
 	INC request_draw           ; State changed, request a new draw
+	JMP loop_sleep
+
+loop_render_no_trans:
+; If we're in the game state
+; Render the bounce count
+	LDA state
+	AND #%00000010 
+	BEQ loop_sleep
+
+	JSR RENDER_COUNT
+	INC request_draw
 
 loop_sleep:
 	JSR SLEEP
